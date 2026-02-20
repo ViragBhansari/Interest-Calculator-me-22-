@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compound Interest Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 700px;
+            padding: 40px;
+            overflow-y: auto;
+            max-height: 95vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2980B9;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #2980B9;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .today-date {
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: 'Segoe UI', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2980B9;
+            box-shadow: 0 0 8px rgba(41, 128, 185, 0.2);
+        }
+
+        input[type="number"]::placeholder,
+        input[type="text"]::placeholder {
+            color: #bdc3c7;
+            letter-spacing: 0px;
+        }
+
+        small {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        .date-inputs-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .date-input-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .date-input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .date-input-group input:focus {
+            border-color: #2980B9;
+            box-shadow: 0 0 8px rgba(41, 128, 185, 0.2);
+        }
+
+        .date-label {
+            position: absolute;
+            top: -22px;
+            left: 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #7f8c8d;
+        }
+
+        .rate-section {
+            margin: 25px 0;
+        }
+
+        .rate-label {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 14px;
+            display: block;
+        }
+
+        .rate-dropdown {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 600;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .rate-dropdown:hover {
+            border-color: #2980B9;
+        }
+
+        .rate-dropdown:focus {
+            outline: none;
+            border-color: #2980B9;
+            box-shadow: 0 0 8px rgba(41, 128, 185, 0.2);
+        }
+
+        .rate-dropdown option {
+            padding: 10px;
+            color: #2c3e50;
+            background-color: white;
+        }
+
+        .custom-rate-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            margin-top: 12px;
+        }
+
+        .custom-rate-group input {
+            flex: 1;
+        }
+
+        .custom-rate-group span {
+            color: #7f8c8d;
+            font-weight: 600;
+            padding-bottom: 12px;
+        }
+
+        .interval-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .interval-btn {
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #2c3e50;
+        }
+
+        .interval-btn:hover {
+            border-color: #2980B9;
+        }
+
+        .interval-btn.active {
+            background: #2980B9;
+            color: white;
+            border-color: #2980B9;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calculate-btn {
+            flex: 1;
+            padding: 14px;
+            background: linear-gradient(135deg, #2980B9 0%, #1e5a8e 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(41, 128, 185, 0.3);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(41, 128, 185, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #1e7e34 100%);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .add-btn:hover {
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .investments-list {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #2980B9;
+            display: none;
+        }
+
+        .investments-list.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .investment-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #2980B9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .investment-details {
+            flex: 1;
+        }
+
+        .investment-principal {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .investment-months {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-bottom: 8px;
+        }
+
+        .investment-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #27ae60;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .calculation-details {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #2980B9;
+            display: none;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .calculation-details.show {
+            display: block;
+        }
+
+        .calculation-details p {
+            margin: 8px 0;
+            color: #2c3e50;
+        }
+
+        .calculation-details strong {
+            color: #2980B9;
+        }
+
+        .results-section {
+
+                const itemHTML = `
+                    <div class="investment-item">
+                        <div class="investment-details">
+                            <div class="investment-principal">₹${inv.principal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})} • ${inv.monthsElapsed.toFixed(2)} months</div>
+                            <div class="investment-months">Started: ${formatDate(inv.startDate)} • Rate: ${inv.rate}% • ${intervalLabel}</div>
+                            <div class="investment-amount">₹${inv.totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        <button type="button" class="delete-btn" onclick="deleteInvestment(${inv.id})">🗑️ Delete</button>
+                    </div>
+                    <div class="calculation-details" id="details-${inv.id}">
+                        <p><strong>Calculation Details:</strong></p>
+                        <p>Principal (P): ₹${inv.principal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                        <p>Monthly Rate (r): ${inv.rate}%</p>
+                        <p>Time Period (t): ${inv.monthsElapsed.toFixed(2)} months</p>
+                        <p>Compounding Interval: ${intervalLabel} (${inv.interval} months)</p>
+                        <p>Number of Periods (n): ${(inv.monthsElapsed / inv.interval).toFixed(3)}</p>
+                        <p>Period Rate: ${(inv.rate * inv.interval).toFixed(2)}%</p>
+                        <p><strong>Formula: A = P × (1 + r)^n</strong></p>
+                        <p>Amount (A): ₹${inv.totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                        <p>Compound Interest (CI): ₹${inv.interest.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </div>
+                `;
+
+                const itemHTML = `
+                    <div class="investment-item" onclick="toggleDetails(${inv.id})" style="cursor: pointer;">
+                        <div class="investment-details">
+                            <div class="investment-principal">₹${inv.principal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})} • ${inv.monthsElapsed.toFixed(2)} months</div>
+                            <div class="investment-months">Started: ${formatDate(inv.startDate)} • Rate: ${inv.rate}% • ${intervalLabel}</div>
+                            <div class="investment-amount">₹${inv.totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        <button type="button" class="delete-btn" onclick="deleteInvestment(${inv.id}, event)">🗑️ Delete</button>
+                    </div>
+                    <div class="calculation-details" id="details-${inv.id}">
+                        <p><strong>Calculation Details:</strong></p>
+                        <p>Principal (P): ₹${inv.principal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                        <p>Monthly Rate (r): ${inv.rate}%</p>
+                        <p>Time Period (t): ${inv.monthsElapsed.toFixed(2)} months</p>
+                        <p>Compounding Interval: ${intervalLabel} (${inv.interval} months)</p>
+                        <p>Number of Periods (n): ${(inv.monthsElapsed / inv.interval).toFixed(3)}</p>
+                        <p>Period Rate: ${(inv.rate * inv.interval).toFixed(2)}%</p>
+                        <p><strong>Formula: A = P × (1 + r)^n</strong></p>
+                        <p>Amount (A): ₹${inv.totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                        <p>Compound Interest (CI): ₹${inv.interest.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </div>
+                `;
+            margin-top: 20px;
+            padding: 20px;
+            background: #e8f8f5;
+            border-radius: 10px;
+            border-left: 4px solid #27ae60;
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-title {
+            color: #27ae60;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #d5f4e6;
+            font-size: 14px;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: #27ae60;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .grand-total-box {
+            background: linear-gradient(135deg, #27ae60 0%, #1e7e34 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            background: #fadbd8;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .emoji {
+            margin-right: 5px;
+        }
+
+        .no-investments {
+            text-align: center;
+            color: #95a5a6;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .investment-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .delete-btn {
+                margin-top: 10px;
+            }
+
+            .date-inputs-container {
+                gap: 8px;
+            }
+
+            .interval-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Compound Interest Calculator</h1>
+	    <h2 style="margin-top: 10px; font-size: 1em; font-weight: 600; font-color:      		             		2980B9">
+    		👨‍💻 Created by VIRAG BHANSARI
+	    </h2>
+            <div class="today-date" id="todayDate"></div>
+        </header>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <form id="calculatorForm" onsubmit="addInvestment(event)">
+            <div class="form-group">
+                <label for="principal"><span class="emoji">💵</span>Principal Amount (₹)</label>
+                <input 
+                    type="number" 
+                    id="principal" 
+                    placeholder="Enter amount (e.g., 10000)" 
+                    step="0.01"
+                    min="0"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label><span class="emoji">📅</span>Start Date</label>
+                <div class="date-inputs-container">
+                    <div class="date-input-group">
+                        <label class="date-label">Day</label>
+                        <input 
+                            type="number" 
+                            id="dateDay" 
+                            placeholder="DD" 
+                            min="1"
+                            max="31"
+                            oninput="validateDay(this); handleDateKeyboard(this, 'month')"
+                            required
+                        >
+                    </div>
+                    <div class="date-input-group">
+                        <label class="date-label">Month</label>
+                        <input 
+                            type="number" 
+                            id="dateMonth" 
+                            placeholder="MM" 
+                            min="1"
+                            max="12"
+                            oninput="validateMonth(this); handleDateKeyboard(this, 'year')"
+                            required
+                        >
+                    </div>
+                    <div class="date-input-group">
+                        <label class="date-label">Year</label>
+                        <input 
+                            type="number" 
+                            id="dateYear" 
+                            placeholder="YY" 
+                            min="0"
+                            max="99"
+                            oninput="validateYear(this)"
+                            required
+                        >
+                    </div>
+                </div>
+                <small>Enter day, month, year separately (e.g., 1, 1, 25 for 1 Jan 2025)</small>
+            </div>
+
+            <div class="rate-section">
+                <label for="rateDropdown"><span class="emoji">📊</span>Select Monthly Interest Rate</label>
+                
+                <select id="rateDropdown" class="rate-dropdown" onchange="handleRateChange(this.value)">
+                    <option value="2">2% per month (24% p.a.)</option>
+                    <option value="2.5">2.5% per month (30% p.a.)</option>
+                    <option value="3" selected>3% per month (36% p.a.)</option>
+                    <option value="custom">Custom Rate</option>
+                </select>
+
+                <div class="custom-rate-group" id="customRateGroup" style="display: none;">
+                    <input 
+                        type="number" 
+                        id="customRate" 
+                        placeholder="Enter custom rate" 
+                        step="0.01"
+                        min="0"
+                    >
+                    <span>% per month</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><span class="emoji">⏳</span>Interest Compounding Interval</label>
+               <div class="interval-group">
+   	         <button type="button" class="interval-btn active" onclick="selectInterval(12, this)">Every 1 Year</button>
+   	         <button type="button" class="interval-btn" onclick="selectInterval(24, this)">Every 2 Years</button>
+   	         <button type="button" class="interval-btn" onclick="selectInterval(36, this)">Every 3 Years</button>
+	      </div>
+                <small>Interest will be added to principal at selected interval</small>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="calculate-btn">➕ Add Investment</button>
+                <button type="button" class="calculate-btn add-btn" onclick="clearForm()">🔄 Clear</button>
+            </div>
+        </form>
+
+        <div class="investments-list" id="investmentsList">
+            <div class="results-title">📊 Your Calculations</div>
+            <div id="investmentItemsContainer"></div>
+
+            <div class="results-section active">
+                <div class="results-title" style="margin-top: 15px;">💰 Summary</div>
+                <div class="result-row">
+                    <span class="result-label">Total Principal</span>
+                    <span class="result-value" id="totalPrincipal">₹ 0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Total Interest</span>
+                    <span class="result-value" id="totalInterest">₹ 0.00</span>
+                </div>
+                <div class="grand-total-box">
+                    🎉 Grand Total: <span id="grandTotal">₹ 0.00</span>
+                </div>
+                <button type="button" class="calculate-btn add-btn" style="margin-top: 15px; width: 100%;" onclick="clearAllInvestments()">🗑️ Clear All Entries</button>
+            </div>
+        </div>
+
+        <div class="no-investments" id="emptyState">
+            No calculations added yet. Add your first investment above! 👆
+        </div>
+    </div>
+
+    <script>
+        let selectedRate = 3.0;
+        let selectedInterval = 12; // Default: 1 years (12 months)
+        let investments = [];
+
+        window.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            document.getElementById('todayDate').textContent = `Today: ${formatDate(today)}`;
+            setupDateKeyboardNavigation();
+        });
+
+        function formatDate(date) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-IN', options);
+        }
+
+        function validateDay(input) {
+            if (input.value > 31) input.value = 31;
+            if (input.value < 1 && input.value !== '') input.value = 1;
+        }
+
+        function validateMonth(input) {
+            if (input.value > 12) input.value = 12;
+            if (input.value < 1 && input.value !== '') input.value = 1;
+        }
+
+        function validateYear(input) {
+            if (input.value > 99) input.value = 99;
+            if (input.value < 0 && input.value !== '') input.value = 0;
+        }
+
+        function handleDateKeyboard(input, nextFieldId) {
+            if (input.value.length >= 2) {
+                if (nextFieldId === 'month') {
+                    document.getElementById('dateMonth').focus();
+                } else if (nextFieldId === 'year') {
+                    document.getElementById('dateYear').focus();
+                }
+            }
+        }
+
+        function setupDateKeyboardNavigation() {
+            const dateDay = document.getElementById('dateDay');
+            const dateMonth = document.getElementById('dateMonth');
+            const dateYear = document.getElementById('dateYear');
+            const rateDropdown = document.getElementById('rateDropdown');
+
+            dateDay.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    dateMonth.focus();
+                }
+            });
+
+            dateMonth.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    dateYear.focus();
+                }
+            });
+
+            dateYear.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    rateDropdown.focus();
+                }
+            });
+        }
+
+        function handleRateChange(value) {
+            const customRateGroup = document.getElementById('customRateGroup');
+            
+            if (value === 'custom') {
+                customRateGroup.style.display = 'flex';
+                document.getElementById('customRate').focus();
+            } else {
+                customRateGroup.style.display = 'none';
+                selectedRate = parseFloat(value);
+                document.getElementById('customRate').value = '';
+            }
+        }
+
+        function selectInterval(months, button) {
+            selectedInterval = months;
+            document.querySelectorAll('.interval-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+
+        function getDateFromInputs() {
+            const day = parseInt(document.getElementById('dateDay').value);
+            const month = parseInt(document.getElementById('dateMonth').value);
+            const year = parseInt(document.getElementById('dateYear').value);
+
+            if (!day || !month || !year === undefined) return null;
+
+            const fullYear = 2000 + year;
+            const date = new Date(fullYear, month - 1, day);
+
+            if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== fullYear) {
+                return null;
+            }
+
+            return date;
+        }
+
+        function addInvestment(event) {
+            event.preventDefault();
+            
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.classList.remove('show');
+
+            try {
+                const principal = parseFloat(document.getElementById('principal').value);
+                const startDate = getDateFromInputs();
+                const customRate = document.getElementById('customRate').value.trim();
+
+                if (!principal || principal <= 0) {
+                    showError('Principal amount must be greater than 0');
+                    return;
+                }
+
+                if (!startDate) {
+                    showError('Please enter a valid date (Day: 1-31, Month: 1-12, Year: 00-99)');
+                    return;
+                }
+
+                const today = new Date();
+
+                if (startDate > today) {
+                    showError('Start date cannot be in the future');
+                    return;
+                }
+
+                let monthlyRate;
+                if (customRate) {
+                    monthlyRate = parseFloat(customRate);
+                    if (isNaN(monthlyRate) || monthlyRate < 0) {
+                        showError('Monthly rate must be a valid positive number');
+                        return;
+                    }
+                } else {
+                    monthlyRate = selectedRate;
+                }
+
+                const daysElapsed = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+                let monthsElapsed = daysElapsed / 30.44;
+
+                // Round to nearest 0.25
+                monthsElapsed = Math.round(monthsElapsed * 4) / 4;
+
+                // Hybrid Compound + Simple Interest Calculation
+                const monthlyRateDecimal = monthlyRate / 100;
+                const periodRateDecimal = (monthlyRateDecimal * selectedInterval); // Rate for the interval
+                
+                // Step 1: Calculate complete compounding periods
+                const completeCompoundingPeriods = Math.floor(monthsElapsed / selectedInterval);
+                const amountAfterCompounding = principal * Math.pow(1 + periodRateDecimal, completeCompoundingPeriods);
+                
+                // Step 2: Calculate remaining months after last complete period
+                const remainingMonths = monthsElapsed - (completeCompoundingPeriods * selectedInterval);
+                
+                // Step 3: Apply simple interest on remaining months using the compounded amount as new principal
+                const simpleInterestOnRemaining = (amountAfterCompounding * monthlyRate * remainingMonths) / 100;
+                
+                const totalAmount = amountAfterCompounding + simpleInterestOnRemaining;
+                const compoundInterest = totalAmount - principal;
+
+                const investment = {
+                    id: Date.now(),
+                    principal: principal,
+                    startDate: startDate,
+                    daysElapsed: daysElapsed,
+                    monthsElapsed: monthsElapsed,
+                    interest: compoundInterest,
+                    totalAmount: totalAmount,
+                    rate: customRate ? parseFloat(customRate) : selectedRate,
+                    interval: selectedInterval
+                };
+
+                investments.push(investment);
+                updateDisplay();
+                clearForm();
+
+            } catch (error) {
+                showError('An error occurred. Please check your inputs.');
+                console.error(error);
+            }
+        }
+
+        function deleteInvestment(id, event) {
+            if (event) event.stopPropagation();
+            investments = investments.filter(inv => inv.id !== id);
+            updateDisplay();
+        }
+
+        function toggleDetails(id) {
+            const detailsDiv = document.getElementById(`details-${id}`);
+            detailsDiv.classList.toggle('show');
+        }
+
+        function clearAllInvestments() {
+            if (investments.length === 0) {
+                alert('No entries to clear');
+                return;
+            }
+            
+            const confirmed = confirm('Are you sure you want to delete all entries? This cannot be undone.');
+            if (confirmed) {
+                investments = [];
+                updateDisplay();
+                alert('All entries cleared successfully!');
+            }
+        }
+
+        function updateDisplay() {
+            if (investments.length === 0) {
+                document.getElementById('investmentsList').classList.remove('active');
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('investmentsList').classList.add('active');
+            document.getElementById('emptyState').style.display = 'none';
+
+            const container = document.getElementById('investmentItemsContainer');
+            container.innerHTML = '';
+
+            let totalPrincipal = 0;
+            let totalInterest = 0;
+            let grandTotal = 0;
+
+            investments.forEach(inv => {
+                totalPrincipal += inv.principal;
+                totalInterest += inv.interest;
+                grandTotal += inv.totalAmount;
+
+                let intervalLabel = 'Every 1 Year';
+	       if (inv.interval === 24) intervalLabel = 'Every 2 Years';
+	       if (inv.interval === 36) intervalLabel = 'Every 3 Years';
+
+                const itemHTML = `
+                    <div class="investment-item" onclick="toggleDetails(${inv.id})" style="cursor: pointer;">
+                        <div class="investment-details">
+                            <div class="investment-principal">₹${inv.principal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})} • ${inv.monthsElapsed.toFixed(2)} months</div>
+                            <div class="investment-months">Started: ${formatDate(inv.startDate)} • Rate: ${inv.rate}% • ${intervalLabel}</div>
+                            <div class="investment-amount">₹${inv.totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        <button type="button" class="delete-btn" onclick="deleteInvestment(${inv.id}, event)">🗑️ Delete</button>
+                    </div>
+                    <div class="calculation-details" id="details-${inv.id}">
+                        <p><strong>Calculation Details:</strong></p>
+                        <p>Principal (P): ₹${inv.principal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                        <p>Monthly Rate (r): ${inv.rate}%</p>
+                        <p>Time Period (t): ${inv.monthsElapsed.toFixed(2)} months</p>
+                        <p>Compounding Interval: ${intervalLabel} (${inv.interval} months)</p>
+                        <p>Number of Periods (n): ${(inv.monthsElapsed / inv.interval).toFixed(3)}</p>
+                        <p>Period Rate: ${(inv.rate * inv.interval).toFixed(2)}%</p>
+                        <p><strong>Formula: A = P × (1 + r)^n</strong></p>
+                        <p>Amount (A): ₹${inv.totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                        <p>Compound Interest (CI): ₹${inv.interest.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </div>
+                `;
+                container.innerHTML += itemHTML;
+            });
+
+            document.getElementById('totalPrincipal').textContent = `₹ ${totalPrincipal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('totalInterest').textContent = `₹ ${totalInterest.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('grandTotal').textContent = `₹ ${grandTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        }
+
+        function clearForm() {
+            document.getElementById('calculatorForm').reset();
+            document.getElementById('rateDropdown').value = '3';
+            selectedRate = 3.0;
+            selectedInterval = 12;
+            document.querySelectorAll('.interval-btn').forEach(btn => btn.classList.remove('active'));
+	   document.querySelectorAll('.interval-btn')[0].classList.add('active');
+            document.getElementById('customRateGroup').style.display = 'none';
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('dateDay').focus();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = '⚠️ ' + message;
+            errorDiv.classList.add('show');
+        }
+    </script>
+</body>
+</html>

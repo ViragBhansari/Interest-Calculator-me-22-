@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Interest Calculator with Month Rounding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-row input {
+            width: 100%;
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .radio-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .custom-rate-input {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .custom-rate-input.active {
+            display: block;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .calculation-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .calculation-card .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .calculation-card .label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .calculation-card .value {
+            font-size: 1.3em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .calculation-card .currency {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            width: 100%;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .summary-item {
+            margin-bottom: 20px;
+        }
+
+        .summary-item .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .summary-item .value {
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            color: #2c3e50;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        .rounding-display {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.95em;
+            color: #856404;
+            font-weight: 500;
+        }
+
+        .month-input-section {
+            background: white;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .month-input-section label {
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .month-input-section input {
+            border-color: #ffc107;
+        }
+
+        .month-input-section input:focus {
+            border-color: #ffc107;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #7f8c8d;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Simple Interest Calculator</h1>
+	    <h2 style="margin-top: 10px; font-size: 2em; font-weight: 600;">
+    		👨‍💻 Created by VIRAG BHANSARI
+	    </h2>
+            	    
+        </div>
+
+        <div class="content">
+            <!-- LEFT SECTION: INPUT FORM -->
+            <div>
+                <div class="section">
+                    <div class="section-title">📝 Investment Details</div>
+
+                    <div class="info-box">
+                        <strong>ℹ️ Smart Rounding:</strong> Month values automatically round to the nearest pattern (1, 1.25, 1.33, 1.5, 1.66, 1.75, 2) with upper bound prioritization.
+                    </div>
+
+                    <form id="calculatorForm">
+                        <!-- Principal Amount -->
+                        <div class="form-group">
+                            <label for="principal">Principal Amount (₹)</label>
+                            <input 
+                                type="number" 
+                                id="principal" 
+                                placeholder="Enter amount (e.g., 10000)" 
+                                min="1"
+                                step="0.01"
+                                required
+                            >
+                        </div>
+
+                        <!-- Start Date -->
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <div class="input-row">
+                                <input 
+                                    type="number" 
+                                    id="startDay" 
+                                    placeholder="Day" 
+                                    min="1" 
+                                    max="31"
+                                    required
+                                >
+                                <input 
+                                    type="number" 
+                                    id="startMonth" 
+                                    placeholder="Month" 
+                                    min="1" 
+                                    max="12"
+                                    required
+                                >
+                                <input 
+                                    type="number" 
+                                    id="startYear" 
+                                    placeholder="Year (2 digit)" 
+                                    min="0"
+                                    max="99"
+                                    required
+                                >
+                            </div>
+                            <small style="color: #7f8c8d; margin-top: 5px;">Enter day, month, and 2-digit year (e.g., 1, 1, 25 for 1 Jan 2025)</small>
+                        </div>
+
+                        <!-- Interest Rate Selection -->
+                        <div class="form-group">
+                            <label for="rateDropdown">Select Monthly Interest Rate</label>
+                            <select id="rateDropdown" required>
+                                <option value="2">2% per month (24% p.a.)</option>
+                                <option value="2.5">2.5% per month (30% p.a.)</option>
+                                <option value="3" selected>3% per month (36% p.a.)</option>
+                                <option value="custom">Custom Rate</option>
+                            </select>
+                            <div class="custom-rate-input">
+                                <input 
+                                    type="number" 
+                                    id="customRate" 
+                                    placeholder="Enter custom rate (% per month)" 
+                                    min="0"
+                                    step="0.01"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Custom Month Input Section -->
+                        <div class="month-input-section">
+                            <label for="customMonths">⭐ Enter Custom Month Value (Optional)</label>
+                            <input 
+                                type="number" 
+                                id="customMonths" 
+                                placeholder="Enter any month value (e.g., 18.20)" 
+                                min="0"
+                                step="0.01"
+                            >
+                            <div class="rounding-display" id="roundingDisplay" style="display: none;"></div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">➕ Add Investment</button>
+                            <button type="reset" class="btn-secondary">🔄 Clear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RIGHT SECTION: RESULTS & SUMMARY -->
+            <div>
+                <div class="section">
+                    <div class="section-title">📊 Your Calculations</div>
+                    <div id="calculationsList"></div>
+                </div>
+
+                <div class="summary-box" style="margin-top: 20px;">
+                    <div class="section-title" style="color: white; justify-content: center;">💰 Summary</div>
+                    <div class="summary-item">
+                        <div class="label">Total Principal</div>
+                        <div class="value">₹ <span id="totalPrincipal">0.00</span></div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">Total Interest</div>
+                        <div class="value">₹ <span id="totalInterest">0.00</span></div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">Grand Total</div>
+                        <div class="value" style="font-size: 2.5em;">🎉 ₹ <span id="grandTotal">0.00</span></div>
+                    </div>
+                    <button class="btn-danger" id="clearAllBtn" style="margin-top: 20px;">🗑️ Clear All Entries</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💡 <strong>Formula:</strong> Interest = (Principal × Rate × Time) / 100 | Time is in months (automatically rounded)</p>
+        </div>
+    </div>
+
+    <script>
+        // ========== ROUNDING ALGORITHM ==========
+        /**
+         * Rounds a month value to the nearest allowed pattern with upper bound prioritization
+         * Allowed patterns: 1, 1.25, 1.33, 1.5, 1.66, 1.75, 2 (repeating for all bases)
+         * 
+         * @param {number} months - The month value to round
+         * @returns {object} - {roundedValue, originalValue, explanation}
+         */
+        function roundMonthsWithUpperBound(months) {
+            if (months <= 0) return { roundedValue: 0, originalValue: months, explanation: "Invalid month value" };
+
+            // Define allowed fractional patterns (0 to 1)
+            const allowedFractions = [0, 0.25, 0.33, 0.5, 0.66, 0.75, 1];
+
+            // Extract integer and fractional parts
+            const integerPart = Math.floor(months);
+            const fractionalPart = months - integerPart;
+
+            // Calculate distances to each allowed fraction
+            const distanceMap = allowedFractions.map(fraction => ({
+                fraction: fraction,
+                distance: Math.abs(fractionalPart - fraction)
+            }));
+
+            // Find the minimum distance with tolerance for floating point errors
+            const tolerance = 1e-9;
+            const minDistance = Math.min(...distanceMap.map(d => d.distance));
+
+            // Get all fractions that are equidistant (within tolerance)
+            const candidates = distanceMap.filter(
+                d => Math.abs(d.distance - minDistance) < tolerance
+            );
+
+            // Apply upper bound prioritization: choose the largest fraction among candidates
+            const selectedFraction = Math.max(...candidates.map(c => c.fraction));
+
+            // Reconstruct the rounded month value
+            const roundedMonths = integerPart + selectedFraction;
+            const finalValue = Math.round(roundedMonths * 100) / 100;
+
+            // Generate explanation
+            const isExactMatch = Math.abs(fractionalPart - selectedFraction) < tolerance;
+            let explanation = "";
+            
+            if (isExactMatch) {
+                explanation = `✓ Exact match: ${months} → ${finalValue}`;
+            } else if (candidates.length > 1) {
+                explanation = `⚖️ Equidistant (Upper Bound): ${months.toFixed(3)} → ${finalValue} (chose larger: .${(selectedFraction * 100).toFixed(0)})`;
+            } else {
+                explanation = `🎯 Nearest value: ${months.toFixed(3)} → ${finalValue}`;
+            }
+
+            return {
+                roundedValue: finalValue,
+                originalValue: months,
+                explanation: explanation
+            };
+        }
+
+        // ========== CALCULATIONS STORAGE ==========
+        let calculations = [];
+
+        // ========== EVENT LISTENERS ==========
+        const form = document.getElementById('calculatorForm');
+        const rateDropdown = document.getElementById('rateDropdown');
+        const customRateInput = document.getElementById('customRate');
+        const customRateSection = document.querySelector('.custom-rate-input');
+
+        // Handle custom rate selection from dropdown
+        rateDropdown.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customRateSection.classList.add('active');
+                customRateInput.required = true;
+            } else {
+                customRateSection.classList.remove('active');
+                customRateInput.required = false;
+                customRateInput.value = '';
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get form values
+            const principal = parseFloat(document.getElementById('principal').value);
+            const startDay = parseInt(document.getElementById('startDay').value);
+            const startMonth = parseInt(document.getElementById('startMonth').value);
+            const startYearInput = parseInt(document.getElementById('startYear').value);
+            const startYear = 2000 + startYearInput; // Convert 2-digit year to 4-digit
+            
+            const selectedRate = rateDropdown.value;
+            const rate = selectedRate === 'custom' ? parseFloat(customRateInput.value) : parseFloat(selectedRate);
+
+            // Validate inputs
+            if (isNaN(principal) || principal <= 0) {
+                alert('Please enter a valid principal amount');
+                return;
+            }
+            if (isNaN(rate) || rate <= 0) {
+                alert('Please enter a valid interest rate');
+                return;
+            }
+
+            // Calculate months from start date to today
+            const startDate = new Date(startYear, startMonth - 1, startDay);
+            const today = new Date();
+            const monthDiff = (today.getFullYear() - startDate.getFullYear()) * 12 + 
+                             (today.getMonth() - startDate.getMonth()) + 
+                             (today.getDate() - startDate.getDate()) / 30;
+            const timeInMonths = monthDiff;
+
+            // Round months using the algorithm
+            const roundingResult = roundMonthsWithUpperBound(timeInMonths);
+            const roundedMonths = roundingResult.roundedValue;
+
+            // Calculate interest
+            const interest = (principal * rate * roundedMonths) / 100;
+            const total = principal + interest;
+
+            // Create calculation object
+            const calculation = {
+                id: Date.now(),
+                principal: principal,
+                rate: rate,
+                months: timeInMonths,
+                roundedMonths: roundedMonths,
+                interest: interest,
+                total: total,
+                startDate: `${startDay}/${startMonth}/${startYear}`,
+                roundingExplanation: roundingResult.explanation
+            };
+
+            calculations.push(calculation);
+            updateUI();
+            form.reset();
+            customRateSection.classList.remove('active');
+        });
+
+        // Delete calculation
+        function deleteCalculation(id) {
+            calculations = calculations.filter(calc => calc.id !== id);
+            updateUI();
+        }
+
+        // Update UI
+        function updateUI() {
+            updateCalculationsList();
+            updateSummary();
+        }
+
+        function updateCalculationsList() {
+            const listContainer = document.getElementById('calculationsList');
+
+            if (calculations.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🚀</div>
+                        <p>No calculations added yet. Add your first investment above! 👆</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = calculations.map(calc => `
+                <div class="calculation-card">
+                    <div class="card-content">
+                        <div class="label">📅 Date & Rate</div>
+                        <div class="value">${calc.startDate} @ ${calc.rate}%/month</div>
+                        <div style="font-size: 0.85em; color: #7f8c8d; margin-top: 5px;">
+                            <strong>Months:</strong> ${calc.months.toFixed(2)} → ${calc.roundedMonths.toFixed(2)}
+                            <br><small>${calc.roundingExplanation}</small>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="label">Principal</div>
+                        <div class="value"><span class="currency">₹</span> ${calc.principal.toFixed(2)}</div>
+                        <div style="margin-top: 10px;">
+                            <div class="label">Interest</div>
+                            <div class="value"><span class="currency">₹</span> ${calc.interest.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteCalculation(${calc.id})">🗑️ Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function updateSummary() {
+            const totalPrincipal = calculations.reduce((sum, calc) => sum + calc.principal, 0);
+            const totalInterest = calculations.reduce((sum, calc) => sum + calc.interest, 0);
+            const grandTotal = totalPrincipal + totalInterest;
+
+            document.getElementById('totalPrincipal').textContent = totalPrincipal.toFixed(2);
+            document.getElementById('totalInterest').textContent = totalInterest.toFixed(2);
+            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+        }
+
+        // Clear all
+        document.getElementById('clearAllBtn').addEventListener('click', function() {
+            if (calculations.length === 0) {
+                alert('No calculations to clear!');
+                return;
+            }
+            if (confirm('Are you sure you want to clear all calculations?')) {
+                calculations = [];
+                updateUI();
+            }
+        });
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
