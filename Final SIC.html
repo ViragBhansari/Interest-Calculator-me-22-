@@ -687,16 +687,28 @@
         }
 
         // Clear all
-        document.getElementById('clearAllBtn').addEventListener('click', function() {
-            if (calculations.length === 0) {
-                alert('No calculations to clear!');
-                return;
-            }
-            if (confirm('Are you sure you want to clear all calculations?')) {
-                calculations = [];
-                updateUI();
-            }
-        });
+       // Replace your existing Clear All event listener with this:
+		document.getElementById('clearAllBtn').addEventListener('click', function() {
+    		if (confirm('Clear all entries?')) {
+        		calculations = [];
+        		// This is the important part:
+        		localStorage.removeItem('sic_local_data'); 
+        		updateUI();
+    		}
+		});
+
+// Inside your form submission logic, add this to save to History:
+		const historyEntry = {
+    		type: 'Simple',
+    		principal: principal,
+    		interest: interest,
+    		paidPrincipal: parseFloat(document.getElementById('paidPrincipal').value) || 0,
+    		paidInterest: parseFloat(document.getElementById('paidInterest').value) || 0,
+    		timestamp: new Date().toISOString()
+		};
+		const globalHistory = JSON.parse(localStorage.getItem('calc_history') || '[]');
+		globalHistory.push(historyEntry);
+		localStorage.setItem('calc_history', JSON.stringify(globalHistory));
 
         // Initialize
         updateUI();
