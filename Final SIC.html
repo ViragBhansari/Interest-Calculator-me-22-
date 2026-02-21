@@ -478,6 +478,23 @@
                         <div class="label">Grand Total</div>
                         <div class="value" style="font-size: 2.5em;">🎉 ₹ <span id="grandTotal">0.00</span></div>
                     </div>
+					<div style="margin-top:20px; padding:20px; border:2px solid #667eea; border-radius:10px; background:#f0f4ff;">
+    					<h3 style="margin-bottom:15px; color:#444;">Payment Receipt</h3>
+    
+    					<button onclick="processPayment('full')" style="width:100%; padding:12px; background:#27ae60; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer; margin-bottom:15px;">
+        					✅ Full Payment Received
+   						</button>
+
+    					<hr style="margin-bottom:15px; opacity:0.3;">
+
+    					<div style="display:flex; gap:10px; margin-bottom:10px;">
+        					<input type="number" id="partP" placeholder="Paid Principal" style="width:50%; padding:10px; border-radius:5px; border:1px solid #ccc;">
+       						<input type="number" id="partI" placeholder="Paid Interest" style="width:50%; padding:10px; border-radius:5px; border:1px solid #ccc;">
+    					</div>
+    					<button onclick="processPayment('partial')" style="width:100%; padding:12px; background:#f39c12; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">
+        					🔶 Partial Payment Received
+    					</button>
+					</div>
                     <button class="btn-danger" id="clearAllBtn" style="margin-top: 20px;">🗑️ Clear All Entries</button>
                 </div>
             </div>
