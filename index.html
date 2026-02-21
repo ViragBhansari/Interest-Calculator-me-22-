@@ -2,95 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Interest Calculator Hub</title>
+    <title>Interest Hub & Collection Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 600px; }
-        h1 { margin-bottom: 10px; color: #333; }
-        .buttons { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
-        .btn { text-decoration: none; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: 600; transition: 0.3s; color: white; display: block; }
+        body { background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
+        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); width: 100%; max-width: 800px; text-align: center; }
+        .buttons { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
+        .btn { text-decoration: none; padding: 15px; border-radius: 10px; font-weight: 600; color: white; border: none; cursor: pointer; display: block; }
         .simple { background: #667eea; }
         .compound { background: #2980B9; }
-        .history-btn { background: #27ae60; cursor: pointer; border: none; width: 100%; }
+        .history-btn { background: #27ae60; margin-top: 10px; }
         
-        .dashboard { margin-top: 20px; text-align: left; background: #f8f9fa; padding: 20px; border-radius: 10px; display: none; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .stat-card { background: white; padding: 10px; border-radius: 8px; border: 1px solid #ddd; text-align: center; }
-        .stat-card div { font-size: 12px; color: #666; }
-        .stat-card strong { font-size: 14px; color: #27ae60; }
-        
-        .history-list { margin-top: 20px; max-height: 300px; overflow-y: auto; }
-        .history-item { background: white; padding: 10px; margin-bottom: 8px; border-radius: 5px; font-size: 13px; border-left: 4px solid #667eea; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .history-section { margin-top: 30px; display: none; text-align: left; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background: #f4f7f6; color: #333; }
+        .total-row { font-weight: bold; background: #e8f5e9; }
+        .clear-btn { background: #e74c3c; padding: 8px 15px; font-size: 12px; margin-top: 15px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Interest Hub</h1>
-        <p style="margin-bottom: 20px;">Created by VIRAG BHANSARI</p>
-
+        <h1>Interest Calculator Hub</h1>
         <div class="buttons">
-            <a href="Final SIC.html" class="btn simple">Simple Interest</a>
-            <a href="Compound.html" class="btn compound">Compound Interest</a>
-            <button class="btn history-btn" onclick="toggleHistory()">📋 View Collection History</button>
+            <a href="Final SIC.html" class="btn simple">Simple Interest Calculator</a>
+            <a href="Compound.html" class="btn compound">Compound Interest Calculator</a>
+            <button class="btn history-btn" onclick="toggleHistory()">📋 View Payment History</button>
         </div>
 
-        <div id="dashboard" class="dashboard">
+        <div id="historySection" class="history-section">
             <h3>💰 Collection Summary</h3>
-            <div class="stat-grid">
-                <div class="stat-card"><div>Daily</div><strong id="dailyColl">₹0</strong></div>
-                <div class="stat-card"><div>Monthly</div><strong id="monthlyColl">₹0</strong></div>
-                <div class="stat-card"><div>Annual</div><strong id="annualColl">₹0</strong></div>
-            </div>
-            
-            <div class="history-list" id="historyList"></div>
-            <button class="btn" style="background:#e74c3c; margin-top:10px; font-size:14px;" onclick="clearGlobalHistory()">Clear All History</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Principal</th>
+                        <th>Interest</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="collectionTableBody">
+                    </tbody>
+            </table>
+            <button class="btn clear-btn" onclick="clearGlobalHistory()">Reset All History</button>
         </div>
     </div>
 
     <script>
         function toggleHistory() {
-            const dash = document.getElementById('dashboard');
-            dash.style.display = dash.style.display === 'block' ? 'none' : 'block';
-            if(dash.style.display === 'block') loadHistory();
+            const sec = document.getElementById('historySection');
+            sec.style.display = sec.style.display === 'block' ? 'none' : 'block';
+            if(sec.style.display === 'block') loadHistory();
         }
 
         function loadHistory() {
-            const history = JSON.parse(localStorage.getItem('calc_history') || '[]');
-            const list = document.getElementById('historyList');
+            const history = JSON.parse(localStorage.getItem('payment_history') || '[]');
             const now = new Date();
             
-            let daily = 0, monthly = 0, annual = 0;
-            list.innerHTML = '';
+            const stats = {
+                daily: { p: 0, i: 0, t: 0 },
+                monthly: { p: 0, i: 0, t: 0 },
+                annual: { p: 0, i: 0, t: 0 }
+            };
 
-            history.reverse().forEach(item => {
-                const itemDate = new Date(item.timestamp);
-                const totalPaid = (item.paidPrincipal || 0) + (item.paidInterest || 0);
+            history.forEach(item => {
+                const d = new Date(item.date);
+                const isToday = d.toDateString() === now.toDateString();
+                const isThisMonth = d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                const isThisYear = d.getFullYear() === now.getFullYear();
 
-                // Calculations for Dashboard
-                if(itemDate.toDateString() === now.toDateString()) daily += totalPaid;
-                if(itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear()) monthly += totalPaid;
-                if(itemDate.getFullYear() === now.getFullYear()) annual += totalPaid;
-
-                // UI list
-                list.innerHTML += `
-                    <div class="history-item">
-                        <strong>${item.type}</strong> - ${itemDate.toLocaleDateString()}<br>
-                        Principal: ₹${item.principal} | Paid: ₹${item.paidPrincipal || 0}<br>
-                        Interest: ₹${item.interest.toFixed(2)} | Paid: ₹${item.paidInterest || 0}
-                    </div>
-                `;
+                if (isToday) { stats.daily.p += item.p; stats.daily.i += item.i; stats.daily.t += (item.p + item.i); }
+                if (isThisMonth) { stats.monthly.p += item.p; stats.monthly.i += item.i; stats.monthly.t += (item.p + item.i); }
+                if (isThisYear) { stats.annual.p += item.p; stats.annual.i += item.i; stats.annual.t += (item.p + item.i); }
             });
 
-            document.getElementById('dailyColl').textContent = '₹' + daily.toLocaleString();
-            document.getElementById('monthlyColl').textContent = '₹' + monthly.toLocaleString();
-            document.getElementById('annualColl').textContent = '₹' + annual.toLocaleString();
+            const rows = [
+                { label: 'Daily (Today)', data: stats.daily },
+                { label: 'Monthly', data: stats.monthly },
+                { label: 'Annually', data: stats.annual }
+            ];
+
+            document.getElementById('collectionTableBody').innerHTML = rows.map(row => `
+                <tr>
+                    <td><strong>${row.label}</strong></td>
+                    <td>₹${row.data.p.toFixed(2)}</td>
+                    <td>₹${row.data.i.toFixed(2)}</td>
+                    <td class="total-row">₹${row.data.t.toFixed(2)}</td>
+                </tr>
+            `).join('');
         }
 
         function clearGlobalHistory() {
-            if(confirm("Delete all history and collection data?")) {
-                localStorage.removeItem('calc_history');
+            if(confirm("Permanently delete all payment records?")) {
+                localStorage.removeItem('payment_history');
                 loadHistory();
             }
         }
