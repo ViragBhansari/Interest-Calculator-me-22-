@@ -4,108 +4,96 @@
     <meta charset="UTF-8">
     <title>Interest Calculator Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            background: white;
-            padding: 50px;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            text-align: center;
-            width: 90%;
-            max-width: 600px;
-        }
-
-        h1 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        p {
-            margin-bottom: 40px;
-            color: #666;
-        }
-
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .btn {
-            text-decoration: none;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            transition: 0.3s;
-            color: white;
-        }
-
-        .simple {
-            background: #667eea;
-        }
-
-        .simple:hover {
-            background: #5a67d8;
-        }
-
-        .compound {
-            background: #2980B9;
-        }
-
-        .compound:hover {
-            background: #1f6391;
-        }
-
-        @media (min-width: 600px) {
-            .buttons {
-                flex-direction: row;
-                justify-content: center;
-            }
-
-            .btn {
-                width: 220px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 600px; }
+        h1 { margin-bottom: 10px; color: #333; }
+        .buttons { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+        .btn { text-decoration: none; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: 600; transition: 0.3s; color: white; display: block; }
+        .simple { background: #667eea; }
+        .compound { background: #2980B9; }
+        .history-btn { background: #27ae60; cursor: pointer; border: none; width: 100%; }
+        
+        .dashboard { margin-top: 20px; text-align: left; background: #f8f9fa; padding: 20px; border-radius: 10px; display: none; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-card { background: white; padding: 10px; border-radius: 8px; border: 1px solid #ddd; text-align: center; }
+        .stat-card div { font-size: 12px; color: #666; }
+        .stat-card strong { font-size: 14px; color: #27ae60; }
+        
+        .history-list { margin-top: 20px; max-height: 300px; overflow-y: auto; }
+        .history-item { background: white; padding: 10px; margin-bottom: 8px; border-radius: 5px; font-size: 13px; border-left: 4px solid #667eea; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     </style>
 </head>
-
 <body>
-
     <div class="container">
-        <h1>Interest Calculator Hub</h1>
-	<p style="margin-top: 10px; font-size: 1em; font-weight: 600;">
-    👨‍💻 Created by VIRAG SANDEEP BHANSARI
-</p>
-        <p>Select the calculator you want to use</p>
+        <h1>Interest Hub</h1>
+        <p style="margin-bottom: 20px;">Created by VIRAG BHANSARI</p>
 
         <div class="buttons">
-            <a href="Final SIC.html" class="btn simple">
-                Simple Interest Calculator
-            </a>
+            <a href="Final SIC.html" class="btn simple">Simple Interest</a>
+            <a href="Compound.html" class="btn compound">Compound Interest</a>
+            <button class="btn history-btn" onclick="toggleHistory()">📋 View Collection History</button>
+        </div>
 
-            <a href="Compound.html" class="btn compound">
-                Compound Interest Calculator
-            </a>
+        <div id="dashboard" class="dashboard">
+            <h3>💰 Collection Summary</h3>
+            <div class="stat-grid">
+                <div class="stat-card"><div>Daily</div><strong id="dailyColl">₹0</strong></div>
+                <div class="stat-card"><div>Monthly</div><strong id="monthlyColl">₹0</strong></div>
+                <div class="stat-card"><div>Annual</div><strong id="annualColl">₹0</strong></div>
+            </div>
+            
+            <div class="history-list" id="historyList"></div>
+            <button class="btn" style="background:#e74c3c; margin-top:10px; font-size:14px;" onclick="clearGlobalHistory()">Clear All History</button>
         </div>
     </div>
 
-</body>
+    <script>
+        function toggleHistory() {
+            const dash = document.getElementById('dashboard');
+            dash.style.display = dash.style.display === 'block' ? 'none' : 'block';
+            if(dash.style.display === 'block') loadHistory();
+        }
 
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('calc_history') || '[]');
+            const list = document.getElementById('historyList');
+            const now = new Date();
+            
+            let daily = 0, monthly = 0, annual = 0;
+            list.innerHTML = '';
+
+            history.reverse().forEach(item => {
+                const itemDate = new Date(item.timestamp);
+                const totalPaid = (item.paidPrincipal || 0) + (item.paidInterest || 0);
+
+                // Calculations for Dashboard
+                if(itemDate.toDateString() === now.toDateString()) daily += totalPaid;
+                if(itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear()) monthly += totalPaid;
+                if(itemDate.getFullYear() === now.getFullYear()) annual += totalPaid;
+
+                // UI list
+                list.innerHTML += `
+                    <div class="history-item">
+                        <strong>${item.type}</strong> - ${itemDate.toLocaleDateString()}<br>
+                        Principal: ₹${item.principal} | Paid: ₹${item.paidPrincipal || 0}<br>
+                        Interest: ₹${item.interest.toFixed(2)} | Paid: ₹${item.paidInterest || 0}
+                    </div>
+                `;
+            });
+
+            document.getElementById('dailyColl').textContent = '₹' + daily.toLocaleString();
+            document.getElementById('monthlyColl').textContent = '₹' + monthly.toLocaleString();
+            document.getElementById('annualColl').textContent = '₹' + annual.toLocaleString();
+        }
+
+        function clearGlobalHistory() {
+            if(confirm("Delete all history and collection data?")) {
+                localStorage.removeItem('calc_history');
+                loadHistory();
+            }
+        }
+    </script>
+</body>
 </html>
