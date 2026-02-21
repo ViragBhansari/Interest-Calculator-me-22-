@@ -854,20 +854,26 @@
             detailsDiv.classList.toggle('show');
         }
 
-        function clearAllInvestments() {
-            if (investments.length === 0) {
-                alert('No entries to clear');
-                return;
-            }
-            
-            const confirmed = confirm('Are you sure you want to delete all entries? This cannot be undone.');
-            if (confirmed) {
-                investments = [];
-                updateDisplay();
-                alert('All entries cleared successfully!');
-            }
-        }
+        // Replace clearAllInvestments function:
+		function clearAllInvestments() {
+    		if (confirm('Delete all entries?')) {
+        		investments = [];
+        		updateDisplay();
+   			}
+		}
 
+		// Inside addInvestment function, add the History Tracker:
+		const historyEntry = {
+    		type: 'Compound',
+    		principal: principal,
+    		interest: compoundInterest,
+    		paidPrincipal: parseFloat(document.getElementById('paidPrincipal').value) || 0,
+    		paidInterest: parseFloat(document.getElementById('paidInterest').value) || 0,
+    		timestamp: new Date().toISOString()
+		};
+		const globalHistory = JSON.parse(localStorage.getItem('calc_history') || '[]');
+		globalHistory.push(historyEntry);
+		localStorage.setItem('calc_history', JSON.stringify(globalHistory));
         function updateDisplay() {
             if (investments.length === 0) {
                 document.getElementById('investmentsList').classList.remove('active');
