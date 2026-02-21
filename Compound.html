@@ -964,6 +964,50 @@
             errorDiv.textContent = '⚠️ ' + message;
             errorDiv.classList.add('show');
         }
+		function processPayment(type) {
+    let pPaid = 0;
+    let iPaid = 0;
+
+    if (type === 'full') {
+        // Get totals from your existing UI elements
+        pPaid = parseFloat(document.getElementById('totalPrincipal').textContent.replace(/[₹, ]/g, '')) || 0;
+        iPaid = parseFloat(document.getElementById('totalInterest').textContent.replace(/[₹, ]/g, '')) || 0;
+        
+        if (pPaid + iPaid <= 0) { alert("Nothing to pay!"); return; }
+    } else {
+        pPaid = parseFloat(document.getElementById('partP').value) || 0;
+        iPaid = parseFloat(document.getElementById('partI').value) || 0;
+        
+        if (pPaid <= 0 && iPaid <= 0) { alert("Please enter partial amounts"); return; }
+    }
+
+    // 1. Save to "Backend" (localStorage)
+    const history = JSON.parse(localStorage.getItem('payment_history') || '[]');
+    history.push({
+        date: new Date().toISOString(),
+        p: pPaid,
+        i: iPaid
+    });
+    localStorage.setItem('payment_history', JSON.stringify(history));
+
+    // 2. Trigger "Clear All Entry" Automatically
+    // For Final SIC.html use:
+    if(typeof calculations !== 'undefined') {
+        calculations = [];
+        updateUI(); // Your existing function to refresh table
+    }
+    // For Compound.html use:
+    if(typeof investments !== 'undefined') {
+        investments = [];
+        updateDisplay(); // Your existing function to refresh table
+    }
+
+    // 3. Reset Inputs
+    if(document.getElementById('partP')) document.getElementById('partP').value = '';
+    if(document.getElementById('partI')) document.getElementById('partI').value = '';
+
+    alert("Payment Recorded and Entries Cleared!");
+}
     </script>
 </body>
 </html>
